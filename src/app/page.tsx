@@ -47,6 +47,7 @@ export default function Home() {
   const [text, setText] = useState<string>('')
 
   const [data, setData] = useState<string[]>([])
+  const [sum, setSum] = useState<number>(0)
   // let data: any[] | undefined = [];
 
   const onTab2Change = (key: string) => {
@@ -72,8 +73,19 @@ export default function Home() {
     let temp: {identity: string, amount: number}[] = info[activeTabKey2 as keyof typeof info].data.filter((v: {identity: string, amount: number}) => {
       return list.includes(v.identity)
     })
-    console.log(temp)
-    setData(temp.map(v => `${v.identity} | ${v.amount}`))
+    let sum = 0
+    let newList = list.map(v => {
+      const a = temp.find(x => x.identity === v)
+      if (a) {
+        sum += Number(a.amount)
+        return a
+      } else {
+        return {identity: v, amount: 0}
+      }
+    })
+    console.log(newList)
+    setSum(sum)
+    setData(newList.map(v => `${v.identity} | ${v.amount}`))
   }
 
   const tabListNoTitle = [
@@ -108,7 +120,7 @@ export default function Home() {
         <Button onClick={query}>查询</Button>
         <Divider orientation="left">结果</Divider>
         <List
-          header={<div>查询结果</div>}
+          header={<div>查询结果 共：{sum.toFixed(1)} STRK</div>}
           bordered
           dataSource={data}
           renderItem={(item) => (
